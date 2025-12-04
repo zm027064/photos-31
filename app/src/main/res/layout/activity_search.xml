@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/search_photos"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp" />
+
+    </LinearLayout>
+
+    <!-- First Search Criteria -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Spinner
+            android:id="@+id/tag_type_spinner"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            android:background="@drawable/spinner_background" />
+
+        <AutoCompleteTextView
+            android:id="@+id/tag_value_input"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="@string/tag_value"
+            android:padding="12dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/edit_text_background"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <!-- Operator Selection -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <Spinner
+            android:id="@+id/operator_spinner"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/spinner_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/or_and"
+            android:textSize="14sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+
+    </LinearLayout>
+
+    <!-- Second Search Criteria (Optional) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Spinner
+            android:id="@+id/tag_type_spinner2"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            android:background="@drawable/spinner_background" />
+
+        <AutoCompleteTextView
+            android:id="@+id/tag_value_input2"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="@string/tag_value_optional"
+            android:padding="12dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/edit_text_background"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <!-- Search Button -->
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/search"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Results Label -->
+    <TextView
+        android:id="@+id/results_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search_results"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <!-- Results Grid -->
+    <RecyclerView
+        android:id="@+id/search_results_grid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <!-- Empty Results Message -->
+    <TextView
+        android:id="@+id/no_results_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/no_search_results"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+</LinearLayout>

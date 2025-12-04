@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Photos</string>
+    
+    <!-- Main Screen -->
+    <string name="my_albums">My Albums</string>
+    <string name="new_album">New Album</string>
+    <string name="search_photos">Search Photos</string>
+    <string name="search">Search</string>
+    <string name="back">Back</string>
+    <string name="albums">Albums</string>
+    <string name="no_albums">No Albums</string>
+    <string name="no_albums_message">No albums yet. Create one to get started!</string>
+    
+    <!-- Album Screen -->
+    <string name="add_photo">Add Photo</string>
+    <string name="remove_photo">Remove Photo</string>
+    <string name="move_photo">Move Photo</string>
+    <string name="no_photos_in_album">No photos in this album yet</string>
+    <string name="open">Open</string>
+    <string name="rename_album">Rename</string>
+    <string name="delete_album">Delete</string>
+    
+    <!-- Photo View Screen -->
+    <string name="slideshow">Slideshow</string>
+    <string name="add_tag">Add Tag</string>
+    <string name="delete_tag">Delete Tag</string>
+    <string name="tags_label">Tags</string>
+    <string name="no_tags">No tags added yet</string>
+    
+    <!-- Search Screen -->
+    <string name="search_results">Search Results</string>
+    <string name="tag_value">Tag Value</string>
+    <string name="tag_value_optional">Tag Value (Optional)</string>
+    <string name="or_and">AND / OR</string>
+    <string name="no_search_results">No results found</string>
+    
+    <!-- Dialog Strings -->
+    <string name="create_new_album">Create New Album</string>
+    <string name="album_name_hint">Enter album name</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="move">Move</string>
+    <string name="delete">Delete</string>
+    <string name="tag_type">Tag Type</string>
+    <string name="tag_value_dialog">Tag Value</string>
+    <string name="enter_tag_value">Enter tag value</string>
+    <string name="select_destination_album">Select destination album</string>
+    <string name="select_tags_to_delete">Select tags to delete</string>
+    <string name="no_tags_to_delete">No tags to delete</string>
+    
+    <!-- Tag Types -->
+    <string name="person">Person</string>
+    <string name="location">Location</string>
+    
+</resources>
