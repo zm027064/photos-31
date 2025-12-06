@@ -41,13 +41,4 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 }
 
-// Copy any images placed in `src/main/res/stock` into `src/main/assets/stock` at build time
-val copyStockToAssets by tasks.registering(Copy::class) {
-    from(file("src/main/res/stock"))
-    into(file("src/main/assets/stock"))
-    include("**/*")
-}
-
-tasks.named("preBuild") {
-    dependsOn(copyStockToAssets)
-}
+// No build-time copy from res/stock; assets/stock is maintained directly.

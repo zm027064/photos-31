@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
             if (assetFiles != null && assetFiles.length > 0) {
                 for (String fname : assetFiles) {
                     try (java.io.InputStream in = getAssets().open("stock/" + fname)) {
-                        java.io.File out = new java.io.File(imagesDir, fname);
+                        String normalized = normalizeFilename(fname);
+                        java.io.File out = new java.io.File(imagesDir, normalized);
                         try (java.io.OutputStream os = new java.io.FileOutputStream(out)) {
                             byte[] buf = new byte[8192];
                             int r;
@@ -102,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
                             os.flush();
                         }
 
-                                String savedPath = out.getAbsolutePath();
-                                com.example.myapplication.model.Photo p = com.example.myapplication.util.DataStore.addPhoto(this, stockAlbumName, savedPath, fname);
+                        String savedPath = out.getAbsolutePath();
+                        com.example.myapplication.model.Photo p = com.example.myapplication.util.DataStore.addPhoto(this, stockAlbumName, savedPath, normalized);
                     } catch (Exception ex) {
                         android.util.Log.w("MainActivity", "Failed to copy asset: " + fname, ex);
                     }
@@ -124,7 +125,8 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
                             try {
                                 int resId = f.getInt(null);
                                 try (java.io.InputStream din = getResources().openRawResource(resId)) {
-                                    java.io.File out = new java.io.File(imagesDir, name + ".png");
+                                    String outName = normalizeFilename(name + ".png");
+                                    java.io.File out = new java.io.File(imagesDir, outName);
                                     try (java.io.OutputStream os = new java.io.FileOutputStream(out)) {
                                         byte[] buf = new byte[8192];
                                         int r;
@@ -153,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
                             try {
                                 int resId = f.getInt(null);
                                 try (java.io.InputStream rin = getResources().openRawResource(resId)) {
-                                    java.io.File out = new java.io.File(imagesDir, name + ".dat");
+                                    String outName = normalizeFilename(name + ".dat");
+                                    java.io.File out = new java.io.File(imagesDir, outName);
                                     try (java.io.OutputStream os = new java.io.FileOutputStream(out)) {
                                         byte[] buf = new byte[8192];
                                         int r;
@@ -251,6 +254,20 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
         }
 
         prefs.edit().putBoolean("added_ny_tags", true).apply();
+    }
+
+    // Normalize filenames to lowercase and replace invalid chars with underscore
+    private String normalizeFilename(String name) {
+        if (name == null) return "";
+        // remove any path components
+        String base = name.replaceAll(".*/", "");
+        // lower-case
+        String lower = base.toLowerCase();
+        // replace spaces and non [a-z0-9._-] with underscore
+        String normalized = lower.replaceAll("[^a-z0-9._-]", "_");
+        // trim multiple underscores
+        normalized = normalized.replaceAll("_+", "_");
+        return normalized;
     }
 
     @Override
