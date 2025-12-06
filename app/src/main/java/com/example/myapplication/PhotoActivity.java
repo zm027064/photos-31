@@ -38,6 +38,7 @@ public class PhotoActivity extends AppCompatActivity implements TagAdapter.OnTag
     private int photoIndex;
     private Photo currentPhoto;
     private List<Photo> albumPhotos;
+    private String originalImagePath;
 
     private ImageView photoView;
     private TextView photoFilename;
@@ -67,6 +68,7 @@ public class PhotoActivity extends AppCompatActivity implements TagAdapter.OnTag
 
         albumPhotos = album.getPhotos();
         currentPhoto = albumPhotos.get(photoIndex);
+        originalImagePath = currentPhoto != null ? currentPhoto.getImagePath() : null;
 
         photoView = findViewById(R.id.photo_view);
         photoFilename = findViewById(R.id.photo_filename);
@@ -82,7 +84,13 @@ public class PhotoActivity extends AppCompatActivity implements TagAdapter.OnTag
 
         // Setup buttons
         Button backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(v -> {
+            // Ensure parent receives updated album state before we finish
+            Intent intent = new Intent();
+            intent.putExtra("album", album);
+            setResult(RESULT_OK, intent);
+            finish();
+        });
 
         Button prevButton = findViewById(R.id.prev_button);
         prevButton.setOnClickListener(v -> previousPhoto());
@@ -303,18 +311,22 @@ public class PhotoActivity extends AppCompatActivity implements TagAdapter.OnTag
                 Toast.makeText(PhotoActivity.this, "Enter a name", Toast.LENGTH_SHORT).show();
                 return;
             }
-            boolean ok = com.example.myapplication.util.DataStore.renamePhoto(PhotoActivity.this, album.getName(), currentPhoto.getImagePath(), currentPhoto.getFilename(), newName);
+            // Use ID-based rename to uniquely target this photo instance (handles duplicates)
+            String photoId = currentPhoto != null ? currentPhoto.getId() : null;
+            boolean ok = false;
+            if (photoId != null) {
+                ok = com.example.myapplication.util.DataStore.renamePhotoById(PhotoActivity.this, album.getName(), photoId, newName);
+            }
             if (ok) {
-                // Refresh photo and UI
+                // Update local instance and UI immediately
+                currentPhoto.setFilename(newName);
+                photoFilename.setText(currentPhoto.getFilename());
+                // Refresh store and album reference
                 allAlbums = com.example.myapplication.util.DataStore.getAlbums(PhotoActivity.this);
                 album = com.example.myapplication.util.DataStore.findAlbumByName(album.getName());
-                currentPhoto = album.getPhotoAt(photoIndex);
-                if (currentPhoto != null) {
-                    photoFilename.setText(currentPhoto.getFilename());
-                }
                 Toast.makeText(PhotoActivity.this, "Image renamed", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(PhotoActivity.this, "Rename failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PhotoActivity.this, "Rename failed (invalid index or duplicate?)", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -340,6 +352,15 @@ public class PhotoActivity extends AppCompatActivity implements TagAdapter.OnTag
         intent.putExtra("album", album);
         // Ensure DataStore is up-to-date (TagManager/DataStore already persisted changes)
         setResult(RESULT_OK, intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Mirror the back button behavior to ensure parent refresh
+        Intent intent = new Intent();
+        intent.putExtra("album", album);
+        setResult(RESULT_OK, intent);
+        super.onBackPressed();
     }
 
     /**

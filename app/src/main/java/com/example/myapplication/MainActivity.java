@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity implements AlbumAdapter.OnAl
         createButton.setOnClickListener(v -> createAlbum());
 
         Button searchButton = findViewById(R.id.search_button);
-        searchButton.setOnClickListener(v -> openSearch());
+        if (searchButton != null) {
+            searchButton.setOnClickListener(v -> openSearch());
+        }
     }
 
     @Override

@@ -122,6 +122,69 @@ public class DataStore {
         return true;
     }
 
+    /**
+     * Rename a photo by its index within the album to uniquely identify duplicates.
+     */
+    public static synchronized boolean renamePhotoByIndex(Context context, String albumName, int index, String newFilename) {
+        ensureLoaded(context);
+        if (newFilename == null || newFilename.trim().isEmpty()) return false;
+        Album a = findAlbumByName(albumName);
+        if (a == null) return false;
+        if (index < 0 || index >= a.getPhotoCount()) return false;
+        Photo p = a.getPhotoAt(index);
+        if (p == null) return false;
+        p.setFilename(newFilename.trim());
+        persist(context);
+        return true;
+    }
+
+    // ID-based photo operations for robust identification across duplicates
+    public static synchronized boolean renamePhotoById(Context context, String albumName, String photoId, String newFilename) {
+        ensureLoaded(context);
+        if (newFilename == null || newFilename.trim().isEmpty()) return false;
+        Album a = findAlbumByName(albumName);
+        if (a == null) return false;
+        for (Photo p : a.getPhotos()) {
+            if (photoId != null && photoId.equals(p.getId())) {
+                p.setFilename(newFilename.trim());
+                persist(context);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static synchronized boolean removePhotoById(Context context, String albumName, String photoId) {
+        ensureLoaded(context);
+        Album a = findAlbumByName(albumName);
+        if (a == null) return false;
+        for (int i = 0; i < a.getPhotoCount(); i++) {
+            Photo p = a.getPhotoAt(i);
+            if (p != null && photoId != null && photoId.equals(p.getId())) {
+                a.removePhoto(p);
+                persist(context);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static synchronized boolean movePhotoById(Context context, String fromAlbum, String toAlbum, String photoId) {
+        ensureLoaded(context);
+        Album src = findAlbumByName(fromAlbum);
+        Album dst = findAlbumByName(toAlbum);
+        if (src == null || dst == null) return false;
+        Photo target = null;
+        for (Photo p : src.getPhotos()) {
+            if (photoId != null && photoId.equals(p.getId())) { target = p; break; }
+        }
+        if (target == null) return false;
+        src.removePhoto(target);
+        dst.addPhoto(target);
+        persist(context);
+        return true;
+    }
+
     public static synchronized boolean addTag(Context context, String albumName, String imagePath, String filename, Tag tag) {
         ensureLoaded(context);
         if (tag == null) return false;

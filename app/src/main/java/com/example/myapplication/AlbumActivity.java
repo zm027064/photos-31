@@ -114,11 +114,15 @@ public class AlbumActivity extends AppCompatActivity implements PhotoAdapter.OnP
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newName = input.getText().toString().trim();
             if (!newName.isEmpty() && album != null) {
-                DataStore.renameAlbum(AlbumActivity.this, album.getName(), newName);
-                allAlbums = DataStore.getAlbums(AlbumActivity.this);
-                album = DataStore.findAlbumByName(newName);
-                albumTitle.setText(newName);
-                Toast.makeText(AlbumActivity.this, "Album renamed", Toast.LENGTH_SHORT).show();
+                boolean ok = DataStore.renameAlbum(AlbumActivity.this, album.getName(), newName);
+                if (ok) {
+                    allAlbums = DataStore.getAlbums(AlbumActivity.this);
+                    album = DataStore.findAlbumByName(newName);
+                    albumTitle.setText(newName);
+                    Toast.makeText(AlbumActivity.this, "Album renamed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AlbumActivity.this, "Rename failed: album with that name already exists", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -402,5 +406,24 @@ public class AlbumActivity extends AppCompatActivity implements PhotoAdapter.OnP
             setResult(RESULT_OK, intent);
         }
         // DataStore persists changes immediately; nothing to do here.
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Always refresh the albums and this album before showing UI so the grid reflects
+        // any changes made in child activities (PhotoActivity) immediately.
+        allAlbums = DataStore.getAlbums(this);
+        if (album != null) {
+            Album refreshed = DataStore.findAlbumByName(album.getName());
+            if (refreshed != null) {
+                album = refreshed;
+            }
+        }
+        if (photoAdapter != null && album != null) {
+            photoAdapter.updatePhotos(album.getPhotos());
+        }
+        if (albumTitle != null && album != null) albumTitle.setText(album.getName());
+        updateEmptyState();
     }
 }

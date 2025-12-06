@@ -8,20 +8,31 @@ import java.util.List;
 public class Photo implements Serializable {
     private static final long serialVersionUID = 1L;
     
+    private String id;
     private String imagePath;
     private String filename;
     private List<Tag> tags;
 
     public Photo(String imagePath) {
+        this.id = java.util.UUID.randomUUID().toString();
         this.imagePath = imagePath;
         this.filename = new java.io.File(imagePath).getName();
         this.tags = new ArrayList<>();
     }
 
     public Photo(String imagePath, String filename) {
+        this.id = java.util.UUID.randomUUID().toString();
         this.imagePath = imagePath;
         this.filename = filename;
         this.tags = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getImagePath() {

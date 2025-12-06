@@ -28,15 +28,7 @@
             android:textStyle="bold"
             android:textColor="#000000" />
 
-        <Button
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:minWidth="64dp"
-            android:singleLine="true"
-            android:text="@string/back"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp" />
+        <!-- back button intentionally removed -->
 
     </LinearLayout>
 
@@ -58,14 +50,14 @@
             android:paddingEnd="8dp"
             android:layout_marginEnd="8dp" />
 
-        <Button
+        <!-- <Button
             android:id="@+id/search_button"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:text="@string/search"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
+            android:paddingEnd="16dp" /> -->
 
     </LinearLayout>
 

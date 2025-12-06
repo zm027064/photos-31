@@ -40,6 +40,7 @@ public class StorageManager {
                 JSONArray photosArr = new JSONArray();
                 for (Photo p : a.getPhotos()) {
                     JSONObject pObj = new JSONObject();
+                    pObj.put("id", p.getId());
                     pObj.put("imagePath", p.getImagePath());
                     pObj.put("filename", p.getFilename());
                     JSONArray tagsArr = new JSONArray();
@@ -102,8 +103,12 @@ public class StorageManager {
                         String imagePath = pObj.optString("imagePath", null);
                         String filename = pObj.optString("filename", null);
                         Photo photo = (filename != null)
-                                ? new Photo(imagePath, filename)
-                                : new Photo(imagePath);
+                            ? new Photo(imagePath, filename)
+                            : new Photo(imagePath);
+                        String id = pObj.optString("id", null);
+                        if (id != null && !id.isEmpty()) {
+                            photo.setId(id);
+                        }
                         JSONArray tagsArr = pObj.optJSONArray("tags");
                         if (tagsArr != null && tagsArr.length() > 0) {
                             for (int k = 0; k < tagsArr.length(); k++) {
