@@ -312,9 +312,4 @@ public class AlbumActivity extends AppCompatActivity implements PhotoAdapter.OnP
         intent.putExtra("photoId", photo.getId());
         startActivityForResult(intent, PHOTO_REQUEST_CODE);
     }
-
-    @Override
-    public void onPhotoLongClick(Photo photo) {
-        Toast.makeText(this, "Long-clicked on " + photo.getFilename(), Toast.LENGTH_SHORT).show();
-    }
 }

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_photo_placeholder" />
+        android.src="@drawable/ic_photo_placeholder" />
 
     <TextView
         android:id="@+id/photo_filename"
@@ -20,12 +20,6 @@
         android:textSize="12sp"
         android:ellipsize="end"
         android:lines="2"
-        android:layout_marginTop="4dp" />
-
-    <CheckBox
-        android:id="@+id/photo_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginTop="4dp" />
 
 </LinearLayout>

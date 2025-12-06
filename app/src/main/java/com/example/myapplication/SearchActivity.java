@@ -1,9 +1,7 @@
-
 package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,6 +18,7 @@ import com.example.myapplication.adapter.PhotoAdapter;
 import com.example.myapplication.model.Album;
 import com.example.myapplication.model.Photo;
 import com.example.myapplication.model.TagType;
+import com.example.myapplication.util.DataStore;
 import com.example.myapplication.util.SearchManager;
 
 import java.util.ArrayList;
@@ -41,13 +40,11 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // Load albums from centralized DataStore
-        albums = com.example.myapplication.util.DataStore.getAlbums(this);
+        albums = DataStore.getAlbums(this);
         if (albums == null) albums = new ArrayList<>();
 
         searchResults = new ArrayList<>();
 
-        // Setup spinners
         tagType1Spinner = findViewById(R.id.tag_type_spinner);
         tagType2Spinner = findViewById(R.id.tag_type_spinner2);
         operatorSpinner = findViewById(R.id.operator_spinner);
@@ -56,13 +53,11 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         setupSpinner(tagType2Spinner, new String[]{"Person", "Location"});
         setupSpinner(operatorSpinner, new String[]{"AND", "OR"});
 
-        // Setup autocomplete
         tagValue1Input = findViewById(R.id.tag_value_input);
         tagValue2Input = findViewById(R.id.tag_value_input2);
 
         updateAutocompleteSuggestions();
 
-        // Setup results
         resultsGrid = findViewById(R.id.search_results_grid);
         noResultsMessage = findViewById(R.id.no_results_message);
         resultsTitle = findViewById(R.id.results_title);
@@ -70,14 +65,9 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         resultsGrid.setLayoutManager(new GridLayoutManager(this, 3));
         resultsGrid.setAdapter(resultsAdapter);
 
-        // Setup buttons
-        Button backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> finish());
+        findViewById(R.id.search_button).setOnClickListener(v -> performSearch());
 
-        Button searchButton = findViewById(R.id.search_button);
-        searchButton.setOnClickListener(v -> performSearch());
-
-        // Update autocomplete when tag type changes
         tagType1Spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
@@ -117,26 +107,6 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, suggestions);
         tagValue1Input.setAdapter(adapter);
-        tagValue1Input.setThreshold(1);
-
-        // Update suggestions dynamically as user types
-        tagValue1Input.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String prefix = s.toString();
-                List<String> filtered = SearchManager.getAutocompleteSuggestions(albums, type, prefix);
-                ArrayAdapter<String> newAdapter = new ArrayAdapter<>(SearchActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, filtered);
-                tagValue1Input.setAdapter(newAdapter);
-                tagValue1Input.showDropDown();
-            }
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
-        });
     }
 
     private void updateTagValue2Suggestions() {
@@ -145,25 +115,6 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, suggestions);
         tagValue2Input.setAdapter(adapter);
-        tagValue2Input.setThreshold(1);
-
-        tagValue2Input.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String prefix = s.toString();
-                List<String> filtered = SearchManager.getAutocompleteSuggestions(albums, type, prefix);
-                ArrayAdapter<String> newAdapter = new ArrayAdapter<>(SearchActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, filtered);
-                tagValue2Input.setAdapter(newAdapter);
-                tagValue2Input.showDropDown();
-            }
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
-        });
     }
 
     private TagType getSelectedTagType(Spinner spinner) {
@@ -173,7 +124,6 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
 
     private void performSearch() {
         String tagValue1 = tagValue1Input.getText().toString().trim();
-
         if (tagValue1.isEmpty()) {
             Toast.makeText(this, "Enter at least one tag value", Toast.LENGTH_SHORT).show();
             return;
@@ -183,10 +133,8 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
         String tagValue2 = tagValue2Input.getText().toString().trim();
 
         if (tagValue2.isEmpty()) {
-            // Single criterion search
             searchResults = SearchManager.searchByTag(albums, type1, tagValue1);
         } else {
-            // Dual criterion search
             TagType type2 = getSelectedTagType(tagType2Spinner);
             String operatorStr = operatorSpinner.getSelectedItem().toString();
             SearchManager.SearchOperator operator = operatorStr.equals("AND") ?
@@ -214,27 +162,8 @@ public class SearchActivity extends AppCompatActivity implements PhotoAdapter.On
 
     @Override
     public void onPhotoClick(Photo photo) {
-        // Find which album this photo belongs to
-        Album photoAlbum = null;
-        for (Album album : albums) {
-            if (album.getPhotos().contains(photo)) {
-                photoAlbum = album;
-                break;
-            }
-        }
-
-        if (photoAlbum != null) {
-            Intent intent = new Intent(this, PhotoActivity.class);
-            intent.putExtra("album", photoAlbum);
-            // pass the full albums list so PhotoActivity can update/save consistently
-            intent.putExtra("allAlbums", new java.util.ArrayList<>(albums));
-            intent.putExtra("photoIndex", photoAlbum.getPhotos().indexOf(photo));
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onPhotoLongClick(Photo photo) {
-        // Not used in search view
+        Intent intent = new Intent(this, PhotoActivity.class);
+        intent.putExtra("photoId", photo.getId());
+        startActivity(intent);
     }
 }
